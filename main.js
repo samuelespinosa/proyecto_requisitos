@@ -1,4 +1,20 @@
+//general fuctions
+var clear_m=function(){
+    let form =document.getElementById('insert_js_form');
+    let table=document.getElementById('instert_js');
+    div.children[0].innerHTML="";
+    form.innerHTML="";
+    if(typeof table.getElementsByTagName("tbody")[0] !=='undefined'){
+        table.removeChild(table.getElementsByTagName("tbody")[0]);
+    }
+};
 
+var preconditions=function(arr){
+    arr.forEach(e =>{
+        if(!e){return false}
+    });
+    return true;
+};
 //claeses
 const backup=document.querySelector('#cell-SSNSlAbiQOSAJhHqBq8c-30 path');
 const version=document.querySelector('#cell-SSNSlAbiQOSAJhHqBq8c-92 path');
@@ -25,6 +41,10 @@ const programer=document.querySelector('#cell-SSNSlAbiQOSAJhHqBq8c-135 path');
 const dev_team=document.querySelector('#cell-SSNSlAbiQOSAJhHqBq8c-112 path');
 const dba=document.querySelector('#cell-SSNSlAbiQOSAJhHqBq8c-9 path');
 
+//modal title
+var title=document.getElementById('infoLabel');
+//modalsimple text
+let div =document.getElementById('instert_plainText');
 //info clases
 let info = JSON.parse(localStorage.getItem('rawData')).clases;
 
@@ -101,8 +121,7 @@ const modal = new bootstrap.Modal('#info');
                 //llenar modal
                 let table=document.getElementById('instert_js');
                 //titulo modal
-                let title=document.getElementById('infoLabel');
-                title.innerHTML=cl.info.nombre;
+                    title.innerHTML=cl.info.nombre;
                 //llenar filas  `
                 fill_table (table,cl);
             }
@@ -111,6 +130,7 @@ const modal = new bootstrap.Modal('#info');
     });
 })();
 
+let info_e = JSON.parse(localStorage.getItem('rawData')).eventos;
 //eventos
 (function(){
     var check_event = function(evento,intento){
@@ -121,38 +141,35 @@ const modal = new bootstrap.Modal('#info');
         evento.last_try=false;
         return false;
     };
-    let info_e = JSON.parse(localStorage.getItem('rawData')).eventos;
+    
     //user arises
     const user_arises=document.querySelector('#cell-SSNSlAbiQOSAJhHqBq8c-209 path');
     user_arises.addEventListener('dblclick',function(e){
         let prob =Math.floor(Math.random() * 100) + 1;
         //llenar modal
-        let div =document.getElementById('instert_js_events');
         if(check_event(info_e.user_arises,prob)){
-            div.children[0].innerHTML="Ha entrado un nuevo usuario ";
+            div.children[0].innerHTML="Ha entrado un nuevo usuario ( probabilidad de "+info_e.user_arises.probabilidad+"% )";
         }else{
-            div.children[0].innerHTML="No ha entrado un nuevo usuario ";
+            div.children[0].innerHTML="No ha entrado un nuevo usuario ( probabilidad de "+(100-info_e.user_arises.probabilidad)+"% )";
         }
         //titulo modal
-        let title=document.getElementById('infoLabel');
-        title.innerHTML="User arises: probabilidad de "+info_e.user_arises.probabilidad;
+        title.innerHTML="User arises";
 
         modal.show();
         
     });
+    //Interested
     const request_r_database=document.querySelector('#cell-SSNSlAbiQOSAJhHqBq8c-104 path'); 
     request_r_database.addEventListener('dblclick',function(e){
         let prob =Math.floor(Math.random() * 100) + 1;
         //llenar modal
-        let div =document.getElementById('instert_js_events');
         if(check_event(info_e.request_r_database,prob)){
-            div.children[0].innerHTML="Se requiere una base de datos relacional ( probabilidad de :"+info_e.request_r_database.probabilidad+" )";
+            div.children[0].innerHTML="Se requiere una base de datos relacional ( probabilidad de :"+info_e.request_r_database.probabilidad+"% )";
         }else{
-            div.children[0].innerHTML="No Se requiere una base de datos relacional";
+            div.children[0].innerHTML="No se requiere una base de datos relacional ( probabilidad: "+(100-info_e.request_r_database.probabilidad)+"% )";
         }
         //titulo modal
-        let title=document.getElementById('infoLabel');
-        title.innerHTML="User arises";
+        title.innerHTML="Interested request database";
 
         modal.show();
         
@@ -163,42 +180,265 @@ const modal = new bootstrap.Modal('#info');
 
 
 // Dinamicas 
+let info_d = JSON.parse(localStorage.getItem('rawData')).dinamicas;
+//desings
 
-//cretes
-let desings=document.getElementById('cell-SSNSlAbiQOSAJhHqBq8c-121');
-let form =document.getElementById('insert_js_form');
-let fields=[];
-desings.addEventListener('dblclick', (e)=>{
-    let hojas=info.info_definition.hojas;
-    for (let i = 0; i < hojas.length; i++) {
-        let lab=document.createElement('label');
-        let ar=document.createElement('textarea');
-        ar.setAttribute('id',"definition"+i)
-        ar.setAttribute('class','form-control');
+(function(){
+    let desings=document.getElementById('cell-SSNSlAbiQOSAJhHqBq8c-121');
+    let form =document.getElementById('insert_js_form');
+    let fields=[];
+    desings.addEventListener('dblclick', (e)=>{
+    
+        if (info_e.request_r_database.last_try){
+            let hojas=info.info_definition.hojas;
+            for (let i = 0; i < hojas.length-1; i++) {
+                let dvv=document.createElement('div');
+                let lab=document.createElement('label');
+                let ar=document.createElement('textarea');
+                ar.setAttribute('id',"definition"+i)
+                ar.setAttribute('class','form-control');
+                ar.setAttribute('required','')
+                lab.setAttribute('for',"definition"+i);
+                lab.innerHTML=hojas[i].nombre;
+    
+                fields.push({index:i,f:ar});
+                dvv.appendChild(lab);  
+                dvv.appendChild(ar)
+                form.appendChild(dvv);
+            }
+            let btn=document.createElement('button');
+            btn.classList.add("btn","btn-primary","w-100","mt-2","pt-10");
+            btn.innerHTML="Guardar datos";
+            let full=true;
+            btn.addEventListener('click',(e)=>{     
+                fields.forEach(element => {
+                    if(element.f.value===''){
+                        full = false;
+                        return;
+                    }
+                });
 
-        fields.push({index:i,ar});   
-        form.appendChild(ar);
+                if(full){
+                    fields.forEach(element => {
+                        info.info_definition.hojas[element.index].valores.push(element.f.value);
+                    });
+                    info_d.desings=true;
+                }else{
+                    alert("Campos faltantes no se guardó");
+                    info_d.desings=false;
+                }
+                clear_m();
+                modal.hide();
+            });
+            form.appendChild(btn);
+        }else{
+            div.children[0].innerHTML="Ningun cliente ha solicitado una base de datos relacional";
+            info_d.desings=false;
+        }
+        //Titulo modal
+        title.innerHTML="Designs";
+        modal.show();
+        
+    });
+})();
+
+//aproves
+
+var aprove = (function (){
+    
+    let form =document.getElementById('insert_js_form');
+    let aproves=document.getElementById('cell-tE6iZ3CQhYsDijoS7ZWy-17');
+    let handler=function(){
+        if(info_d.desings){
+            div.children[0].innerHTML+="<div><h5>última instanscia de structure definition</h5></div>";
+            info.info_definition.hojas.forEach(h=> {
+                div.children[0].innerHTML+="<div> <b>"+h.nombre+":</b><p>"+h.valores[0] +"</p></div>";
+            });
+            let btn1=document.createElement('button');
+            btn1.classList.add("btn","btn-primary","w-100","mt-2","pt-10");
+            btn1.innerHTML="Aprove";
+            let btn2=document.createElement('button');
+            btn2.classList.add("btn","btn-primary","w-100","mt-2","pt-10");
+            btn2.innerHTML="Reject";
+            form.appendChild(btn1);
+            form.appendChild(btn2);
+            let arr=info.info_definition.hojas;
+            btn1.addEventListener('click',(e)=>{
+                info_d.aproves=true;
+                info_d.desings=false;   
+                let temp=arr[arr.length-1].valores
+                temp.push("Yes");
+                clear_m();
+                modal.hide();
+            });
+            btn2.addEventListener('click',(e)=>{
+                info_d.aproves=false;
+                let temp=arr[arr.length-1].valores;
+                temp.push("No");
+                clear_m();
+                modal.hide();
+            });
+            
+        }else{
+            div.children[0].innerHTML="Implicación necesaria no satísfecha";
+            info_d.aproves=false;
+        }
+        //Titulo modal
+        title.innerHTML="Aproves";
+        modal.show();
+    };
+    var start= function(){
+        aproves.addEventListener('dblclick',handler);   
+    };
+    return {start,handler};
+})();
+aprove.start();
+//develops
+var develops = (function(){
+    let dvl=document.getElementById('cell-SSNSlAbiQOSAJhHqBq8c-14');
+    var handler=function(){
+        if(info_d.aproves){
+            let form =document.getElementById('insert_js_form');
+            let code=document.createElement('textarea');
+            let file=document.createElement('textarea');
+            let lab1=document.createElement('label');
+            let lab2=document.createElement('label');
+            code.setAttribute('class','form-control');
+            code.setAttribute('id','code');
+            file.setAttribute('class','form-control');
+            file.setAttribute('id','file');
+            lab1.setAttribute('for','code');
+            lab1.innerHTML="Code";
+            lab2.setAttribute('for','file');
+            lab2.innerHTML="Documentation";
+            let div1=document.createElement('div');
+            div1.appendChild(lab1);
+            div1.appendChild(code);
+            let div2=document.createElement('div');
+            div2.appendChild(lab2);
+            div2.appendChild(file);
+            form.appendChild(div1);
+            form.appendChild(div2);
+            let btn=document.createElement('button');
+            btn.classList.add("btn","btn-primary","w-100","mt-2","pt-10");
+            btn.innerHTML="Guardar datos";
+            btn.addEventListener('click',(e)=>{
+                if(file.value !=='' && code.value !==''){
+                    info_d.develops.value=true;
+                    info_d.aproves=false;
+                    info.info_documentation.hojas[0].valores.push(file.value);
+                    info.info_database.hojas[0].valores.push("Average");
+                    info.info_database.hojas[1].valores.push("Average");
+                }else{
+                    info_d.develops.value=false;
+                    alert("Campos faltantes");
+                }
+                modal.hide();
+                clear_m();
+            });
+            form.appendChild(btn);
+        }else{
+            div.children[0].innerHTML="Implicación necesaria no satísfecha";
+            info_d.develops.value=false;
+        }
+        //Titulo modal
+        title.innerHTML="Develops";
+        modal.show();
+    };
+    function start(){
+        dvl.addEventListener('dblclick',handler);
     }
-    //Titulo modal
-    let title=document.getElementById('infoLabel');
-    title.innerHTML="Definition of the database";
-    modal.show();
-});
+    return {handler, start};
+})();
+develops.start();
+function create_form(id,nomb,cond,pos_cond,callback){
+    let dvl=document.getElementById(id);
+    dvl.addEventListener('dblclick',(e)=>{
+        if(cond.value || cond.last_try){
+            callback();
+        }else{
+            div.children[0].innerHTML="Implicación necesaria no satísfecha";
+            info_d[pos_cond].value=false;
+        }
+        modal.show();
+        //Titulo modal
+        title.innerHTML=nomb;
+    });
+    
+}
+//controls
+var form =document.getElementById('insert_js_form'); 
+var call_controls=function(){
+    let fecha=document.createElement('input');
+    fecha.setAttribute('type','date');
+    fecha.classList.add("w-100");
+
+    let btn=document.createElement('button');
+    btn.classList.add("btn","btn-primary","w-100","mt-2","pt-10");
+    btn.innerHTML="Guardar datos";
+    btn.addEventListener('click',(e)=>{
+        if(fecha.value !==''){
+            info_d["controls"]=true;
+            let d=new Date();
+            info.info_version.hojas[0].valores.push(fecha.value);
+            info.info_version.hojas[1].valores.push(d.getHours()+":"+d.getMinutes());
+            info.info_bakup.hojas[0].valores.push("file.txt");
+        }else{
+            info_d["controls"]=false;
+            alert("Campos faltantes");
+        }
+     
+        modal.hide();
+        clear_m();
+    });
+    form.appendChild(fecha);
+    form.appendChild(btn);
+};
+create_form("cell-VxLT8-vYYtwZTgKGblnZ-12","Controls",info_d.develops,"controls",call_controls);
+//creates
+var call_creates=function(){
+    
+};
+create_form("cell-SSNSlAbiQOSAJhHqBq8c-202","Creates",info_e.user_arises,"creates",call_creates);
+//updates
+var call_updates=function(){
+    
+};
+create_form("cell-SSNSlAbiQOSAJhHqBq8c-206","Updates",info_d.creates,"updates",call_updates);
+//deletes
+var call_deletes=function(){
+   
+};
+create_form("cell-SSNSlAbiQOSAJhHqBq8c-207","Deletes",info_d.creates,"deletes",call_deletes);
+//enters
+var call_enters=function(){
+   
+};
+create_form("cell-SSNSlAbiQOSAJhHqBq8c-219","Enters",info_d.creates,"enters",call_enters);
+//consults
+var call_consults=function(){
+   
+};
+create_form("cell-SSNSlAbiQOSAJhHqBq8c-155","Consults",info_d.enters,"consults",call_consults);
+//updates
+var call_updates2=function(){
+   
+};
+create_form("cell-SSNSlAbiQOSAJhHqBq8c-154","Updates",info_d.enters,"updates2",call_updates2);
+//grants
+var call_grants=function(){
+   
+};  
+create_form("cell-SSNSlAbiQOSAJhHqBq8c-45","Grants",info_d.creates,"grants",call_grants);
+//removes
+var call_removes=function(){
+   
+};
+create_form("cell-qPyNxZiLLxJMrfGkT2nn-69","Removes",info_d.grants,"removes",call_removes);
 
 
 //limpiar modal
+let close_btn=document.getElementById('close_btn');
+close_btn.addEventListener('click',(e)=>clear_m());
 
-(function(){
-    let close_btn=document.getElementById('close_btn');
-    close_btn.addEventListener('click', function(e){
-        let div =document.getElementById('instert_js_events');
-        let form =document.getElementById('insert_js_form');
-        let table=document.getElementById('instert_js');
-        div.children[0].innerHTML="";
-        form.innerHTML="";
-        if(typeof table.getElementsByTagName("tbody")[0] !=='undefined'){
-            table.removeChild(table.getElementsByTagName("tbody")[0]);
-        }
-    })
-})();
 
