@@ -193,7 +193,9 @@ info={
         updates2:{value:false},
         grants:{value:false},
         removes:{value:false}
-    }
+    },
+    clear:false,
 };
-
-localStorage.setItem('rawData', JSON.stringify(info));
+if(!localStorage.getItem('rawData')){
+    localStorage.setItem('rawData', JSON.stringify(info));
+}
