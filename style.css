@@ -12,3 +12,13 @@ svg path{
 #infoLabel{
     text-transform: capitalize;
 }
+#clear{
+    position:absolute;
+    width: 70px;
+    height: 70px;
+}
+#clear button{
+    position: relative;
+    font-size: 70px;
+    color: red;
+}

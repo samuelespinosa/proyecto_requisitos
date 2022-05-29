@@ -148,7 +148,10 @@ info={
         },
         info_dba:{
             nombre:"Database Administrator",
-            hojas:[],
+            hojas:[
+                {nombre:"Soft skill", valores:[]},
+                {nombre:"Knowledge ", valores:[]},
+            ],
             hojas_cl:[] 
         },
         info_dev_team:{
@@ -170,11 +173,11 @@ info={
     },
     eventos:{
         user_arises:{
-            probabilidad: 50,
+            probabilidad: 100,
             last_try:false        
         },
         request_r_database: {
-            probabilidad:50,
+            probabilidad:100,
             last_try:false      
         }
     },
@@ -193,9 +196,8 @@ info={
         updates2:{value:false},
         grants:{value:false},
         removes:{value:false}
-    },
-    clear:false,
+    }
 };
-if(!localStorage.getItem('rawData')){
-    localStorage.setItem('rawData', JSON.stringify(info));
-}
+
+localStorage.setItem('rawData', JSON.stringify(info));
+

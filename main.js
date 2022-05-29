@@ -186,9 +186,8 @@ let info_d = JSON.parse(localStorage.getItem('rawData')).dinamicas;
 (function(){
     let desings=document.getElementById('cell-SSNSlAbiQOSAJhHqBq8c-121');
     let form =document.getElementById('insert_js_form');
-    let fields=[];
     desings.addEventListener('dblclick', (e)=>{
-    
+        let fields=[];
         if (info_e.request_r_database.last_try){
             let hojas=info.info_definition.hojas;
             for (let i = 0; i < hojas.length-1; i++) {
@@ -210,14 +209,13 @@ let info_d = JSON.parse(localStorage.getItem('rawData')).dinamicas;
             btn.classList.add("btn","btn-primary","w-100","mt-2","pt-10");
             btn.innerHTML="Guardar datos";
             let full=true;
-            btn.addEventListener('click',(e)=>{     
-                fields.forEach(element => {
-                    if(element.f.value===''){
-                        full = false;
-                        return;
+            btn.addEventListener('click',(e)=>{   
+                for(let i=0;i<fields.length;i++){
+                    if(fields[i].f.value===''){
+                        full=false;
+                        break;
                     }
-                });
-
+                }  
                 if(full){
                     fields.forEach(element => {
                         info.info_definition.hojas[element.index].valores.push(element.f.value);
@@ -268,6 +266,8 @@ var aprove = (function (){
                 info_d.desings=false;   
                 let temp=arr[arr.length-1].valores
                 temp.push("Yes");
+                info.info_dba.hojas[0].valores=["Leadership","Productivity","Team work","Resilence","Ability to recive and give feedback", "Resolution of problems and confilts"];
+                info.info_dba.hojas[1].valores=["Telecomunicatios","Public safety and security","coumunications and media"];
                 clear_m();
                 modal.hide();
             });
@@ -329,6 +329,14 @@ var develops = (function(){
                     info.info_documentation.hojas[0].valores.push(file.value);
                     info.info_database.hojas[0].valores.push("Average");
                     info.info_database.hojas[1].valores.push("Average");
+                    info.info_data.hojas[0].valores.push("consistent , use (purpose)");
+                    info.info_data.hojas[1].valores.push("High");
+                    info.info_data.hojas[2].valores.push("Aceptable");
+                    info.info_data.hojas[3].valores.push("Yes");
+                    info.info_table.hojas[0].valores.push("Some foreing key");
+                    info.info_table.hojas[1].valores.push("Some priamry key");
+                    info.info_cell.hojas[0].valores.push("Some value added while coding");
+
                 }else{
                     info_d.develops.value=false;
                     alert("Campos faltantes");
@@ -356,6 +364,7 @@ function create_form(id,nomb,cond,pos_cond,callback){
     dvl.addEventListener('dblclick',(e)=>{
         if(cond.value || cond.last_try){
             callback();
+            info_d[pos_cond].value=true;
         }else{
             div.children[0].innerHTML="Implicación necesaria no satísfecha";
             info_d[pos_cond].value=false;
@@ -383,6 +392,7 @@ var call_controls=function(){
             info.info_version.hojas[0].valores.push(fecha.value);
             info.info_version.hojas[1].valores.push(d.getHours()+":"+d.getMinutes());
             info.info_bakup.hojas[0].valores.push("file.txt");
+            info.info_dba.hojas[1].valores.push("Administration and managment");
         }else{
             info_d["controls"]=false;
             alert("Campos faltantes");
@@ -395,44 +405,231 @@ var call_controls=function(){
     form.appendChild(btn);
 };
 create_form("cell-VxLT8-vYYtwZTgKGblnZ-12","Controls",info_d.develops,"controls",call_controls);
+
+var g_btn=function(callback,data){
+    let btn=document.createElement('button');
+    btn.classList.add("btn","btn-primary","w-100","mt-2","pt-10");
+    btn.innerHTML="Guardar datos";
+    let datos=data;
+    console.log(datos);
+    btn.addEventListener('click',(e)=>{
+        callback(datos);
+    });
+    return btn;
+};
+
+var input_form=function(label,id){
+    let div=document.createElement('div');
+    let lab=document.createElement('label');
+    let inp=document.createElement('input');
+    inp.setAttribute('id',id);
+    inp.setAttribute('type','text');
+    inp.setAttribute('class','form-control');
+    lab.setAttribute('for',id);
+    lab.innerHTML=label;
+    div.appendChild(lab); 
+    div.appendChild(inp);
+    form.appendChild(div);
+    return inp;
+};
+var txt_form=function(label,id){
+    let div=document.createElement('div');
+    let lab=document.createElement('label');
+    let inp=document.createElement('textarea');
+    inp.setAttribute('id',id);
+    inp.setAttribute('type','text');
+    inp.setAttribute('class','form-control');
+    lab.setAttribute('for',id);
+    lab.innerHTML=label;
+    div.appendChild(lab); 
+    div.appendChild(inp);
+    form.appendChild(div);
+    return inp;
+};
+var select_form=function(label,id,options){
+    let div=document.createElement('div');
+    let lab=document.createElement('label');
+    let inp=document.createElement('select');
+    options.forEach(e=>{
+        let opt=document.createElement('option');
+        opt.setAttribute('value',e);
+        opt.innerHTML=e;
+        inp.appendChild(opt);
+    }); 
+    inp.firstChild.setAttribute('selected','true');
+    inp.setAttribute('id',id);
+    inp.setAttribute('type','text');
+    inp.setAttribute('class','form-control');
+    lab.setAttribute('for',id);
+    lab.innerHTML=label;
+    div.appendChild(lab); 
+    div.appendChild(inp);
+    form.appendChild(div);
+    return inp;
+};
 //creates
 var call_creates=function(){
-    
+    let user=input_form("Nombre:","user");
+    let email=input_form("Email:","email");
+    let username=input_form("Username:","username333");
+    let password=input_form("Password:","password");
+    let call_btn=function(data){
+        console.log(data);
+        let bl=true;
+        data.forEach(e=> {if(e.value===""){
+            clear_m();
+            modal.hide();
+            bl=false;
+        }});
+        if(bl){
+            info.info_user.hojas[0].valores.push(data[0].value);
+            info.info_user.hojas[1].valores.push(data[1].value);
+            info.info_acount.hojas[0].valores.push(data[2].value);
+            info.info_acount.hojas[1].valores.push(data[3].value);
+        }else{
+            alert("Campos Faltantes");
+        }
+        clear_m();
+        modal.hide();
+    };
+    let btn=g_btn(call_btn,[user,email,username,password]);
+    form.appendChild(btn);
 };
 create_form("cell-SSNSlAbiQOSAJhHqBq8c-202","Creates",info_e.user_arises,"creates",call_creates);
 //updates
 var call_updates=function(){
-    
+    let username=input_form("Username:","username555");
+    let user=input_form("Change nombre:","user");
+    let email=input_form("Change email:","email");
+    let c_username=input_form("Change username:","c_username");
+    let c_password=input_form("Change password:","password");
+    let call_btn=function(data){
+        
+        let ck=info.info_acount.hojas[0].valores.find((e)=>e===data[0].value); 
+        if(ck){
+            let index=info.info_acount.hojas[0].valores.indexOf(username.value);
+            if(data[1].value!==''){
+                info.info_acount.hojas[0].valores[index]=data[1].value;
+            }
+            if(data[2].value!==''){
+                info.info_acount.hojas[1].valores[index]=data[2].value;
+            }
+            if(data[3].value!==''){
+                info.info_user.hojas[0].valores[index]=data[3].value;
+            }
+            if(data[4].value!==''){
+                info.info_user.hojas[1].valores[index]=data[4].value;
+            }
+        }else{
+            alert("Username no encontrado");
+        }
+
+        clear_m();
+        modal.hide();
+    };
+    let btn=g_btn(call_btn,[username,c_username,c_password,user,email]);
+    form.appendChild(btn)
+
 };
 create_form("cell-SSNSlAbiQOSAJhHqBq8c-206","Updates",info_d.creates,"updates",call_updates);
 //deletes
 var call_deletes=function(){
-   
+    let username=input_form("Username:","username1324");
+    let call_btn=function(data){
+        let ck=info.info_acount.hojas[0].valores.find((e)=>e===data[0].value); 
+        if(ck){
+            let index=info.info_acount.hojas[0].valores.indexOf(username.value);
+            info.info_acount.hojas[0].valores[index]=""; 
+            info.info_acount.hojas[1].valores[index]="";
+            info.info_user.hojas[0].valores[index]=""; 
+            info.info_user.hojas[1].valores[index]="";
+           
+        }else{
+            alert("Username no encontrado");
+        }
+        clear_m();
+        modal.hide();
+    };
+    let btn=g_btn(call_btn,[username]);
+    form.appendChild(btn)
 };
 create_form("cell-SSNSlAbiQOSAJhHqBq8c-207","Deletes",info_d.creates,"deletes",call_deletes);
 //enters
 var call_enters=function(){
-   
+    let username=input_form("Username:","username1324");
+    let password=input_form("Password:","password");
+    let call_btn=function(data){    
+        let ck=info.info_acount.hojas[0].valores.find((e)=>e===data[0].value);
+        if(ck){
+            let index=info.info_acount.hojas[0].valores.indexOf(username.value);
+            if(data[1].value===info.info_acount.hojas[1].valores[index]){
+                info.info_acount.hojas[2].valores[index]="Logged in"; 
+            }else{
+                info.info_acount.hojas[2].valores[index]="Logged out"; 
+            }
+        }else{
+            alert("Username no encontrado");
+        }
+        clear_m();
+        modal.hide();
+    };
+    let btn=g_btn(call_btn,[username,password]);
+    form.appendChild(btn)
 };
 create_form("cell-SSNSlAbiQOSAJhHqBq8c-219","Enters",info_d.creates,"enters",call_enters);
 //consults
 var call_consults=function(){
-   
+    let cons=txt_form("Query:","txt");
+    let call_btn=function(data){
+        info.info_interface.hojas[0].valores.push("Some output");
+        info.info_interface.hojas[1].valores.push(data.value);
+        clear_m();
+        modal.hide();
+    };
+    let btn=g_btn(call_btn,cons);
+    form.appendChild(btn)
+
 };
 create_form("cell-SSNSlAbiQOSAJhHqBq8c-155","Consults",info_d.enters,"consults",call_consults);
 //updates
 var call_updates2=function(){
-   
+    let cons=txt_form("Query:","txt2");
+    let call_btn=function(data){
+        info.info_interface.hojas[0].valores.push("Some output");
+        info.info_cell.hojas[0].valores.push("Some value provided by a query");
+        info.info_interface.hojas[1].valores.push(data.value);
+        clear_m();
+        modal.hide();
+    };
+    let btn=g_btn(call_btn,cons);
+    form.appendChild(btn)
 };
 create_form("cell-SSNSlAbiQOSAJhHqBq8c-154","Updates",info_d.enters,"updates2",call_updates2);
 //grants
 var call_grants=function(){
-   
+    let username=select_form("Username:","username11",info.info_user.hojas[0].valores);
+    let privs=select_form("privilege:","privs",["conect","resource","dba"]);
+    let call_btn=function(data){
+        let index=info.info_acount.hojas[0].valores.indexOf(data[0].value);
+        info.info_access.hojas[0].valores[index]=data[1].value;
+        clear_m();
+        modal.hide();
+    };
+    let btn=g_btn(call_btn,[username,privs]);
+    form.appendChild(btn)
 };  
 create_form("cell-SSNSlAbiQOSAJhHqBq8c-45","Grants",info_d.creates,"grants",call_grants);
 //removes
 var call_removes=function(){
-   
+    let username=select_form("Username:","userasdame11",info.info_user.hojas[0].valores);
+    let call_btn=function(data){
+        let index=info.info_acount.hojas[0].valores.indexOf(data[0].value);
+        info.info_access.hojas[0].valores[index]="conect";
+        clear_m();
+        modal.hide();
+    };
+    let btn=g_btn(call_btn,[username]);
+    form.appendChild(btn)
 };
 create_form("cell-qPyNxZiLLxJMrfGkT2nn-69","Removes",info_d.grants,"removes",call_removes);
 
